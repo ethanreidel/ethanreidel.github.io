@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Posts on ethan reidel</title>
-    <link>http://example.org/posts/</link>
+    <link>/posts/</link>
     <description>Recent content in Posts on ethan reidel</description>
     <generator>Hugo -- 0.145.0</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 26 Mar 2025 14:40:53 -0700</lastBuildDate>
-    <atom:link href="http://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>image registration 1</title>
-      <link>http://example.org/posts/deep_image_registration/</link>
+      <link>/posts/deep_image_registration/</link>
       <pubDate>Wed, 26 Mar 2025 14:40:53 -0700</pubDate>
-      <guid>http://example.org/posts/deep_image_registration/</guid>
+      <guid>/posts/deep_image_registration/</guid>
       <description>initial blog post entry detailing image registration techniques and its application to astronomical image stacking</description>
     </item>
   </channel>
