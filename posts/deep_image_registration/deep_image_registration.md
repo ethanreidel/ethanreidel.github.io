@@ -2,7 +2,7 @@
 title: "image registration 1"
 date: 2025-03-26T14:40:53-07:00
 summary: "initial blog post entry detailing image registration techniques and its application to astronomical image stacking"
-draft: true
+#draft: true
 ---
 
 #### blog 1: foundations of image registration
