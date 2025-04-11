@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><meta charset="utf-8">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="noindex, nofollow">
 <title>image registration 1 | ethan reidel</title>
 <meta name="keywords" content="">
 <meta name="description" content="initial blog post entry detailing image registration techniques and its application to astronomical image stacking">
 <meta name="author" content="">
-<link rel="canonical" href="/posts/deep_image_registration/">
+<link rel="canonical" href="//localhost:1313/posts/deep_image_registration/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.f49d66caae9ea0fd43f21f29e71a8d3e284517ed770f2aa86fa012953ad3c9ef.css" integrity="sha256-9J1myq6eoP1D8h8p5xqNPihFF&#43;13Dyqob6ASlTrTye8=" rel="preload stylesheet" as="style">
-<link rel="icon" href="/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<link rel="icon" href="//localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="//localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="//localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="//localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="//localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="/posts/deep_image_registration/">
+<link rel="alternate" hreflang="en" href="//localhost:1313/posts/deep_image_registration/">
 <noscript>
     <style>
         #theme-toggle,
@@ -74,69 +74,21 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
-<meta property="og:url" content="/posts/deep_image_registration/">
-  <meta property="og:site_name" content="ethan reidel">
-  <meta property="og:title" content="image registration 1">
-  <meta property="og:description" content="initial blog post entry detailing image registration techniques and its application to astronomical image stacking">
-  <meta property="og:locale" content="en-us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2025-03-26T14:40:53-07:00">
-    <meta property="article:modified_time" content="2025-03-26T14:40:53-07:00">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="image registration 1">
-<meta name="twitter:description" content="initial blog post entry detailing image registration techniques and its application to astronomical image stacking">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "Posts",
-      "item": "/posts/"
-    }
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "image registration 1",
-      "item": "/posts/deep_image_registration/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "image registration 1",
-  "name": "image registration 1",
-  "description": "initial blog post entry detailing image registration techniques and its application to astronomical image stacking",
-  "keywords": [
+ 
     
-  ],
-  "articleBody": "blog 1: foundations of image registration This is my initial entry for a series of blogs intended to deepen my understanding of image registration applied to astrophotography. Based heavily off of Gregory Gundersen's blog. introduction: what is image registration? Image registration is the process of finding an appropriate transformation T given two images: a fixed image (IF) and a moving image (IM), such that IM is spatially aligned with IF. In general, we choose a fixed image IF and transform IM onto IF. I like to think of this process using an example from astro imaging. Given two mis-aligned images of the night sky, how do we find an appropriate series of transformations such that the two images stacked present a natural image. I naturally think that this problem could be solved through deep learning algorithms. I will touch on that topic later. Back to the basics. types of transformation models Depending on the problem at hand, we may choose different types of transformation models. A transformation model describes the mathematical framework that constrains how the moving image can be aligned with the fixed image. One of the simplest transformation models is the rigid transformation, where we are limited to only translations and rotations, which preserve distances and angles. DISCUSS INTERPOLATION METHODS IN THIS AT SOME POINT\nWe can represent rotations and translations in 2D with a singular matrix:\nin order to optimize/minimize the SSD, we need to perform a few steps: take partials of ssd w.r.t to P where P_i is each transform parameter (tx, ty, theta)\n$$ M_{rigid}= \\begin{pmatrix} 1 \u0026 0 \u0026 0 \\\\ 0 \u0026 \\cos\\theta_x \u0026 -\\sin\\theta_x \\\\ 0 \u0026 \\sin\\theta_x \u0026 \\cos\\theta_x \\end{pmatrix} \\begin{pmatrix} \\cos\\theta_y \u0026 0 \u0026 \\sin\\theta_y \\\\ 0 \u0026 1 \u0026 0 \\\\ -\\sin\\theta_y \u0026 0 \u0026 \\cos\\theta_y \\end{pmatrix} \\begin{pmatrix} \\cos\\theta_z \u0026 -\\sin\\theta_z \u0026 0 \\\\ \\sin\\theta_z \u0026 \\cos\\theta_z \u0026 0 \\\\ 0 \u0026 0 \u0026 1 \\end{pmatrix}. $$\nposing image registration as an optimization problem Traditional image registration algorithms can be posed as an optimization problem, where given a cost function, we try and optimize the output of it. Formally, let IF and IM represent our fixed and moving images respectively. In two-dimensional space, our image coordinates are represented by x = (x, y) and x' = (x', y'). We want to approximate a transformation T : ℝd → ℝd (d is two in our case) such that IM(T(x)) ≈ IF(x), for all x ∈ Ω where Ω is our spatial domain (space in which our coordinates live). While thinking about how image coordinates are represented, I think it is interesting to touch on how the spatial domain of coordinates behaves more like an affine space than a strict vector space. Since translations break the origin preserving axiom of vector spaces, an affine space, which disregards the origin, is a more appropriate representation. DISCUSS OPTIMIZATION TECHNIQUES (GAUSS-NEWTON/GRADIENT DESCENT)\ncommon loss functions sources (format later): https://www.ncbi.nlm.nih.gov/books/NBK597490/ https://staff.fnwi.uva.nl/r.vandenboomgaard/IPCV20162017/LectureNotes/IP/Images/ImageDefinition.html\n",
-  "wordCount" : "486",
-  "inLanguage": "en",
-  "datePublished": "2025-03-26T14:40:53-07:00",
-  "dateModified": "2025-03-26T14:40:53-07:00",
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "/posts/deep_image_registration/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "ethan reidel",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "/favicon.ico"
-    }
-  }
-}
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
 </script>
+    
 </head>
 
 <body class="" id="top">
@@ -154,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="/" accesskey="h" title="ethan reidel (Alt + H)">ethan reidel</a>
+            <a href="//localhost:1313/" accesskey="h" title="ethan reidel (Alt + H)">ethan reidel</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -195,48 +147,51 @@ document.addEventListener("DOMContentLoaded", function() {
 </div>
   </header> 
   <div class="post-content"><h4 id="blog-1-foundations-of-image-registration">blog 1: foundations of image registration<a hidden class="anchor" aria-hidden="true" href="#blog-1-foundations-of-image-registration">#</a></h4>
-<span style="font-size:14px">
-This is my initial entry for a series of blogs intended to deepen my understanding of image registration applied to astrophotography. Based heavily off of 
- <a href="https://gregorygundersen.com/">Gregory Gundersen's blog</a>. 
-</span>
+<!-- raw HTML omitted -->
 <h4 id="introduction-what-is-image-registration">introduction: what is image registration?<a hidden class="anchor" aria-hidden="true" href="#introduction-what-is-image-registration">#</a></h4>
-<span style="font-size:14px">
-Image registration is the process of finding an appropriate transformation <i>T</i> given two images: a fixed image (<i>I<sub>F</sub></i>) and a moving image (<i>I<sub>M</sub></i>), such that <i>I<sub>M</sub></i> is spatially aligned with <i>I<sub>F</sub></i>. In general, we choose a fixed image <i>I<sub>F</sub></i> and transform <i>I<sub>M</sub></i> onto <i>I<sub>F</sub></i>.
+<!-- raw HTML omitted -->
 <p>I like to think of this process using an example from astro imaging. Given two mis-aligned images of the night sky, how do we find an appropriate series of transformations such that the two images stacked present a natural image. I naturally think that this problem could be solved through deep learning algorithms. I will touch on that topic later. Back to the basics.
-</span></p>
+<!-- raw HTML omitted --></p>
 <h4 id="types-of-transformation-models">types of transformation models<a hidden class="anchor" aria-hidden="true" href="#types-of-transformation-models">#</a></h4>
-<span style="font-size:14px">
-Depending on the problem at hand, we may choose different types of transformation models. A transformation model describes the mathematical framework that constrains how the moving image can be aligned with the fixed image. One of the simplest transformation models is the rigid transformation, where we are limited to only translations and rotations, which preserve distances and angles. 
-<p></p>
+<!-- raw HTML omitted -->
 <p>DISCUSS INTERPOLATION METHODS IN THIS AT SOME POINT</p>
 <p>We can represent rotations and translations in 2D with a singular matrix:</p>
 <p>in order to optimize/minimize the SSD, we need to perform a few steps:
 take partials of ssd w.r.t to P where P_i is each transform parameter (tx, ty, theta)</p>
-<p>$$
+$$
 M_{rigid}=
 \begin{pmatrix}
-1 &amp; 0 &amp; 0 \\
-0 &amp; \cos\theta_x &amp; -\sin\theta_x \\
-0 &amp; \sin\theta_x &amp; \cos\theta_x
+1 & 0 & 0 \\\
+0 & \cos\theta_x & -\sin\theta_x \\\
+0 & \sin\theta_x & \cos\theta_x
 \end{pmatrix}
 \begin{pmatrix}
-\cos\theta_y &amp; 0 &amp; \sin\theta_y \\
-0 &amp; 1 &amp; 0 \\
--\sin\theta_y &amp; 0 &amp; \cos\theta_y
+\cos\theta_y & 0 & \sin\theta_y \\\
+0 & 1 & 0 \\\
+-\sin\theta_y & 0 & \cos\theta_y
 \end{pmatrix}
 \begin{pmatrix}
-\cos\theta_z &amp; -\sin\theta_z &amp; 0 \\
-\sin\theta_z &amp; \cos\theta_z &amp; 0 \\
-0 &amp; 0 &amp; 1
+\cos\theta_z & -\sin\theta_z & 0 \\\
+\sin\theta_z & \cos\theta_z & 0 \\\
+0 & 0 & 1
 \end{pmatrix}.
-$$</p>
-</span>
+$$<!-- raw HTML omitted -->
 <h4 id="posing-image-registration-as-an-optimization-problem">posing image registration as an optimization problem<a hidden class="anchor" aria-hidden="true" href="#posing-image-registration-as-an-optimization-problem">#</a></h4>
-<span style="font-size:14px">
-Traditional image registration algorithms can be posed as an optimization problem, where given a cost function, we try and optimize the output of it. Formally, let <i>I<sub>F</sub></i> and <i>I<sub>M</sub></i> represent our fixed and moving images respectively. In two-dimensional space, our image coordinates are represented by <b>x</b> = <i>(x, y)</i> and <b>x'</b> = <i>(x', y')</i>. We want to approximate a transformation <b>T</b> : <b>&#8477</b><sup><i>d</i></sup> &#8594; <b>&#8477</b><sup><i>d</i></sup> (d is two in our case) such that <i>I<sub>M</sub></i>(<b>T</b>(<b>x</b>)) &#8776 <i>I<sub>F</sub></i><i></i>(<b>x</b>), for all <b>x</b> &#8712; &#937; where &#937; is our spatial domain (space in which our coordinates live). While thinking about how image coordinates are represented, I think it is interesting to touch on how the spatial domain of coordinates behaves more like an <i>affine space</i> than a strict vector space. Since translations break the origin preserving axiom of vector spaces, an affine space, which disregards the origin, is a more appropriate representation.
-</span>
+<!-- raw HTML omitted -->
+<p>$x=(x,y)$ and $x&rsquo;=(x&rsquo;,y&rsquo;)$. We want to approximate a transformation <!-- raw HTML omitted -->T<!-- raw HTML omitted --> : <!-- raw HTML omitted -->&amp;#8477<!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted -->d<!-- raw HTML omitted --><!-- raw HTML omitted --> → <!-- raw HTML omitted -->&amp;#8477<!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted -->d<!-- raw HTML omitted --><!-- raw HTML omitted --> (d is two in our case) such that <!-- raw HTML omitted -->I<!-- raw HTML omitted -->M<!-- raw HTML omitted --><!-- raw HTML omitted -->(<!-- raw HTML omitted -->T<!-- raw HTML omitted -->(<!-- raw HTML omitted -->x<!-- raw HTML omitted -->)) &amp;#8776 <!-- raw HTML omitted -->I<!-- raw HTML omitted -->F<!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted -->(<!-- raw HTML omitted -->x<!-- raw HTML omitted -->), for all <!-- raw HTML omitted -->x<!-- raw HTML omitted --> ∈ Ω where Ω is our spatial domain (space in which our coordinates live). While thinking about how image coordinates are represented, I think it is interesting to touch on how the spatial domain of coordinates behaves more like an <!-- raw HTML omitted -->affine space<!-- raw HTML omitted --> than a strict vector space. Since translations break the origin preserving axiom of vector spaces, an affine space, which disregards the origin, is a more appropriate representation.</p>
+<!-- raw HTML omitted -->
+$$
+T = \arg\min_T \mathcal{L}(I_F, I_M \circ T)
+$$$$
+\mathcal{L}_{SSE}=\mathcal{\sum_{(x,y)\in\Omega}}[I_F]
+$$<!-- raw HTML omitted -->
 <p>DISCUSS OPTIMIZATION TECHNIQUES (GAUSS-NEWTON/GRADIENT DESCENT)</p>
 <h4 id="common-loss-functions">common loss functions<a hidden class="anchor" aria-hidden="true" href="#common-loss-functions">#</a></h4>
+<!-- raw HTML omitted -->
+$$
+SSE = \mathcal{\sum_{i=1}^{n}}(y_i-f(x))^2
+$$<p>where $y_i$ is the ground-truth and $f(x)$ is the</p>
+<!-- raw HTML omitted -->
 <p>sources (format later): <a href="https://www.ncbi.nlm.nih.gov/books/NBK597490/">https://www.ncbi.nlm.nih.gov/books/NBK597490/</a>
 <a href="https://staff.fnwi.uva.nl/r.vandenboomgaard/IPCV20162017/LectureNotes/IP/Images/ImageDefinition.html">https://staff.fnwi.uva.nl/r.vandenboomgaard/IPCV20162017/LectureNotes/IP/Images/ImageDefinition.html</a></p>
 
@@ -251,7 +206,7 @@ Traditional image registration algorithms can be posed as an optimization proble
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="/">ethan reidel</a></span> · 
+        <span>&copy; 2025 <a href="//localhost:1313/">ethan reidel</a></span> · 
 
     <span>
         Powered by
