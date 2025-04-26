@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><meta charset="utf-8">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
-<title>image registration 1 | ethan reidel</title>
+<meta name="robots" content="noindex, nofollow">
+<title>Image registration 1 | ethan reidel</title>
 <meta name="keywords" content="">
 <meta name="description" content="initial blog post entry detailing image registration techniques and their application to astronomical image stacking">
 <meta name="author" content="">
-<link rel="canonical" href="/posts/deep_image_registration/">
+<link rel="canonical" href="//localhost:1313/posts/deep_image_registration/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.f49d66caae9ea0fd43f21f29e71a8d3e284517ed770f2aa86fa012953ad3c9ef.css" integrity="sha256-9J1myq6eoP1D8h8p5xqNPihFF&#43;13Dyqob6ASlTrTye8=" rel="preload stylesheet" as="style">
-<link rel="icon" href="/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<link rel="icon" href="//localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="//localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="//localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="//localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="//localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="/posts/deep_image_registration/">
+<link rel="alternate" hreflang="en" href="//localhost:1313/posts/deep_image_registration/">
 <noscript>
     <style>
         #theme-toggle,
@@ -74,69 +74,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
-<meta property="og:url" content="/posts/deep_image_registration/">
-  <meta property="og:site_name" content="ethan reidel">
-  <meta property="og:title" content="image registration 1">
-  <meta property="og:description" content="initial blog post entry detailing image registration techniques and their application to astronomical image stacking">
-  <meta property="og:locale" content="en-us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2025-03-26T14:40:53-07:00">
-    <meta property="article:modified_time" content="2025-03-26T14:40:53-07:00">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="image registration 1">
-<meta name="twitter:description" content="initial blog post entry detailing image registration techniques and their application to astronomical image stacking">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "Posts",
-      "item": "/posts/"
-    }
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "image registration 1",
-      "item": "/posts/deep_image_registration/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "image registration 1",
-  "name": "image registration 1",
-  "description": "initial blog post entry detailing image registration techniques and their application to astronomical image stacking",
-  "keywords": [
-    
-  ],
-  "articleBody": "blog 1: foundations of image registration This is my initial entry for a series of blogs intended to deepen my understanding of image registration applied to astrophotography. Based heavily off of Gregory Gundersen's blog. introduction: what is image registration? Image registration is the process of finding an appropriate transformation \\(T\\) given two images: a fixed image \\((I_F\\)) and a moving image \\((I_M\\)), such that \\(I_M\\) is spatially aligned with \\(I_F\\). I like to think of this process using an example from astronomical imaging. Given two misaligned images of the night sky, how do we find an appropriate series of transformations such that the two images stacked present a natural image? types of transformation models Depending on the registration problem at hand, we may choose different types of transformation models. A transformation model describes the mathematical framework that constrains how the moving image can be aligned with the fixed image. Put simply, the transformation model chosen determines the operations (e.g., rotation or shear) that we can apply to images for registration. One of the simplest transformation models is the rigid model, where we are limited to only translations and rotations, preserving distances and angles. Another common model is the affine model which allows for translation, rotation, shearing and scaling. Affine transformations are more flexible than strict rigid transforms which may suit more complex registration tasks better. From an elementary linear algebra course, we know we can represent linear transformations as matrices. For example, 2D rotation can be formed with this matrix where theta is our rotation degree in radians: $$ \\begin{pmatrix} \\cos(\\theta) \u0026 -\\sin(\\theta) \\\\\\ \\sin(\\theta) \u0026 \\cos(\\theta) \\end{pmatrix} \\begin{pmatrix} x \\\\\\ y \\end{pmatrix} $$Unfortunately, if we want to perform rotation and translation, we need to deal with vector addition, which on modern hardware isn’t ideal. Below is our suboptimal rotation-translation operation where \\(t_x\\) and \\(t_y\\) are the translation in the x and y directions respectively.\n$$ \\begin{pmatrix} \\cos(\\theta) \u0026 -\\sin(\\theta) \\\\\\ \\sin(\\theta) \u0026 \\cos(\\theta) \\end{pmatrix} \\begin{pmatrix} x \\\\\\ y \\end{pmatrix} + \\begin{pmatrix} t_x \\\\\\ t_y \\end{pmatrix} $$Let’s consider a concrete example highlighting why vector addition is suboptimal in our use case. Suppose we have a rotation matrix \\(R\\), a scaling matrix \\(S\\), a translation vector \\(t\\), applied to our data vector \\(\\mathbf{x}\\), and we want to string together these operations. In standard 2D linear algebra, we would compute \\(S(R\\mathbf{x})+t\\), which involves two matrix multiplications and a vector addition, requiring us to keep track of the exact order of operations and preventing us from combining all computation into a single step. If only we could instead use only matrix multiplies, our hardware could much more effectively apply our sequential transformations in an order like \\(T = (SRt)\\) and apply \\(T\\) to a vector \\(\\mathbf{x}\\). Keep in mind modern GPUs are incredibly effective at matrix multiplies.\nConveniently, we can represent translation and rotation as a single matrix-vector operation:\n$$ \\begin{pmatrix} \\cos\\theta \u0026 -\\sin\\theta \u0026 t_x \\\\\\ \\sin\\theta \u0026 \\cos\\theta \u0026 t_y \\\\\\ 0 \u0026 0 \u0026 1 \\end{pmatrix} \\begin{pmatrix} x \\\\\\ y \\\\\\ 1 \\end{pmatrix}= \\begin{pmatrix} x' \\\\\\ y' \\\\\\ 1 \\end{pmatrix} $$You might be asking why there is an extra one in our coordinate vector. We now have homogeneous coordinates where the one is our \\(w\\) coordinate which is different than our normal \\(z\\). The reason we do this is to upscale from 2D space to 3D which gives literal space in our matrices to embed translation with other linear transformations in a singular matrix. This is exactly what we wanted in the previous example \\(T = (SRt)\\mathbf{x}\\).\nLet’s go through a simple example reinforcing this idea. Given the coordinates \\((1, 2), (3, 4)\\), and \\((5, 6)\\), we can construct the matrix where each column represents a set of homogeneous coordinates:\n$$ \\begin{pmatrix} 1 \u0026 3 \u0026 5 \\\\\\ 2 \u0026 4 \u0026 6 \\\\\\ 1 \u0026 1 \u0026 1 \\end{pmatrix} $$Let’s say that we want to rotate those coordinate columns by 90 degrees and translate two units right and two units north. We will set up our matrix-multiplication like this (keep in mind that 90 degrees is \\(\\frac{\\pi}{2}\\) in radians):\n$$ \\begin{pmatrix} \\cos(\\frac{\\pi}{2}) \u0026 -\\sin(\\frac{\\pi}{2}) \u0026 2 \\\\\\ \\sin(\\frac{\\pi}{2}) \u0026 \\cos(\\frac{\\pi}{2}) \u0026 2 \\\\\\ 0 \u0026 0 \u0026 1 \\end{pmatrix} \\begin{pmatrix} 1 \u0026 3 \u0026 5 \\\\\\ 2 \u0026 4 \u0026 6 \\\\\\ 1 \u0026 1 \u0026 1 \\end{pmatrix}= \\begin{pmatrix} 0 \u0026 -2 \u0026 -4 \\\\\\ 3 \u0026 5 \u0026 7 \\\\\\ 1 \u0026 1 \u0026 1 \\end{pmatrix} $$ Our new 2D coordinates are \\((0, 3), (-2, 5)\\), and \\((-4, 7)\\) embedded in 3D space.\nFigure 1\nThe red points represent our original coordinates, the blue our rotated coordinates, and finally the green are the rotated and translated coordinates (Figure 1).\nBefore moving on, I’d like to discuss an interesting geometric idea related to determinants and homogeneous coordinates that ties back to common registration transformations. Geometrically, the determinant is the area (or volume in higher dimensions) defined by our basis vectors post linear transformation. If we examine the determinant of the upper left submatrix of our homogeneous coordinate matrix, we can discover some interesting properties.\nConsider the following homogeneous transformation matrix:\n$$ \\begin{pmatrix} a \u0026 b \u0026 t_x \\\\\\ c \u0026 d \u0026 t_y \\\\\\ 0 \u0026 0 \u0026 1 \\end{pmatrix} $$The upper left \\(2\\) x \\(2\\) submatrix defines the linear part of our transformation, while the right-most column encodes translation. To calculate the determinant of our linear transformation is \\(ad-bc\\).\nIf this determinant is equal to one, the transformation preserves area which indicates a rigid transformation (either rotation or reflection). If our determinant is greater than one, our area is scaled, thus implying a scale or shear operation. Finally, if the determinant is zero, the space is squished into a smaller dimension which tells us the transformation was invertible (meaning there is no transformation that can “rewind time” back to our original spatial state). Such a transformation is not compatible with registration, which usually requires us to preserve spacial structure.\nBy examining the determinant of our transformation matrices, we can tell whether a transformation will be valid in the context of registration. It’s a neat example of how the geometric interpretation of the determinant connects directly to our registration problem.\nNow that we have a basic understanding of transformation models and have learned important background knowledge, we can now move on to our first approach to register images: parameter optimization. posing image registration as an optimization problem Traditional image registration algorithms can be posed as an optimization problem, where given a cost function, we try and optimize the parameters and minimize cost. Formally, let \\( I_F \\) and \\(I_M\\) represent our fixed and moving images respectively. In two-dimensional space, our image coordinates are represented by \\(\\mathbf{x}=(x,y)\\) and \\(\\mathbf{x'}=(x',y')\\). We want to approximate a transformation \\(T\\) : ℝd → ℝd such that \\(I_M(T(\\mathbf{x}))\\) ≈ \\(I_F(\\mathbf{x})\\), for all \\(\\mathbf{x}\\) ∈ Ω where Ω is our spatial domain (space in which our coordinates live). While thinking about how image coordinates are represented, I think it is interesting to touch on how the spatial domain of coordinates behaves more like an affine space than a strict vector space. Since translations, like I mentioned earlier, break the origin preserving axiom of vector spaces, an affine space, which disregards the origin, is a more appropriate representation. A neat quote that cleanly describes affine spaces by late mathematician Marcel Berger is: \"An affine space is nothing more than a vector space whose origin we try to forget about, by adding translations to the linear maps.\" Affine spaces are a natural setting for most of the common transformations used in registration problems (shear, rotation, scaling, translation, etc.). We formulate our optimization problem with the following equation: $$ T = \\arg\\min_T \\mathcal{L}(I_F, I_M \\circ T) $$ Our loss function \\(\\mathcal{L}\\) tells us how well aligned our images are to eachother. common loss functions There are a few loss functions that are utilized in traditional registration algorithms to optimize parameters. One of the most common cost functions for image registration and the one we will be discussing thoroughly is the sum of squared errors (SSE): $$ SSE = \\mathcal{\\sum_{i=1}^{n}}(y_i-f(x))^2 $$where $y_i$ is the ground-truth and $f(x)$ is the predicted value. While this is the general formulation for the SSE, we will need to tune it slightly to suit our image registration task.\n$$ \\mathcal{L}_{SSE}=\\mathcal{\\sum_{(x,y)\\in\\Omega}}[I_F(x, y)-I_M(T_\\theta(x, y))]^2 $$Let \\(I_F(x,y)\\) be the fixed image and \\(I_M(T_\\theta(x, y))\\) be the moving image with our transformation applied to its spatial domain. Comparing this to the traditional SSE formula, our fixed image is the “ground-truth” or the goal state of our moving image. More concretely, we are subtracting the intensity difference at each pixel in both images, squaring that difference, and summing over all pixels.\nThe main caveat of this function is that in order to perform well, the intensities between images must be the exact same. For example, we should use two images of the same scene except one has been transformed in some way for this loss function to converge in a timely manner. There certainly are more effective loss functions for our task, but I appreciate the clean gradient calculation our update rule so I’ll stick with it for this post.\noptimization techniques I’ll now discuss common optimization techniques that can be applied to our sum of squared errors formula to find optimal parameters which register our images. Since our loss function is differentiable, we have a wide variety of optimization techniques to solve our problem. The most famous technique I’ll discuss is gradient descent. Gradient descent is a relatively straightforward first order iterative algorithm that is commonly associated with deep neural networks. Our update rule is:\n$$ \\mathbf{a}_{n+1}=\\mathbf{a}_{n}-\\eta\\nabla\\mathcal{L}(\\mathbf{a}_{n}) $$\\(\\mathbf{a}_{n+1}\\) is our updated parameter vector after a step, \\(\\mathbf{a}_{n}\\) is our current iteration parameters, \\(\\eta\\) is our learning rate or step size, and finally \\(\\nabla\\mathcal{L}(a_n)\\) is the gradient of our loss function. Since we are solving a minimization problem, we subtract the gradient which means we move in the direction of steepest descent. Let’s say we are performing rigid registration where we are limited to translation and rotation. Our parameter vector \\(\\mathbf{a}\\) would be \\((t_x, t_y, \\theta)\\).\nsources (format later): https://www.ncbi.nlm.nih.gov/books/NBK597490/ https://staff.fnwi.uva.nl/r.vandenboomgaard/IPCV20162017/LectureNotes/IP/Images/ImageDefinition.html https://people.computing.clemson.edu/~dhouse/courses/401/notes/affines-matrices.pdf\n",
-  "wordCount" : "1692",
-  "inLanguage": "en",
-  "datePublished": "2025-03-26T14:40:53-07:00",
-  "dateModified": "2025-03-26T14:40:53-07:00",
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "/posts/deep_image_registration/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "ethan reidel",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "/favicon.ico"
-    }
-  }
-}
-</script> 
+ 
     
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <script>
@@ -168,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="/" accesskey="h" title="ethan reidel (Alt + H)">ethan reidel</a>
+            <a href="//localhost:1313/" accesskey="h" title="ethan reidel (Alt + H)">ethan reidel</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -202,17 +140,18 @@ document.addEventListener("DOMContentLoaded", function() {
   <header class="post-header">
     
     <h1 class="post-title entry-hint-parent">
-      image registration 1
+      Image registration 1
     </h1>
     <div class="post-meta"><span title='2025-03-26 14:40:53 -0700 PDT'>March 26, 2025</span>
 
 </div>
   </header> 
-  <div class="post-content"><h4 id="blog-1-foundations-of-image-registration">blog 1: foundations of image registration<a hidden class="anchor" aria-hidden="true" href="#blog-1-foundations-of-image-registration">#</a></h4>
+  <div class="post-content"><h4 id="blog-1-foundations-of-image-registration">Blog 1: foundations of image registration<a hidden class="anchor" aria-hidden="true" href="#blog-1-foundations-of-image-registration">#</a></h4>
 <span style="font-size:14px">
 This is my initial entry for a series of blogs intended to deepen my understanding of image registration applied to astrophotography. Based heavily off of 
- <a href="https://gregorygundersen.com/">Gregory Gundersen's blog</a>. 
-</span>
+<a href="https://gregorygundersen.com/">Gregory Gundersen's blog</a>. 
+<p>Before proceeding, it is assumed that the reader is familiar with basic linear algebra topics, especially representing matrices as linear transformations. Note: index of technical vocabulary at the end of the blog.
+</span></p>
 <h4 id="introduction-what-is-image-registration">introduction: what is image registration?<a hidden class="anchor" aria-hidden="true" href="#introduction-what-is-image-registration">#</a></h4>
 <span style="font-size:14px">
 Image registration is the process of finding an appropriate transformation \(T\) given two images: a fixed image \((I_F\)) and a moving image \((I_M\)), such that \(I_M\) is spatially aligned with \(I_F\).
@@ -265,7 +204,7 @@ x' \\\
 y' \\\
 1
 \end{pmatrix}
-$$<p>You might be asking why there is an extra one in our coordinate vector. We now have <i>homogeneous coordinates</i> where the one is our \(w\) coordinate which is different than our normal \(z\). The reason we do this is to upscale from 2D space to 3D which gives literal space in our matrices to embed translation with other linear transformations in a singular matrix. This is exactly what we wanted in the previous example \(T = (SRt)\mathbf{x}\).</p>
+$$<p>You might be asking why there is an extra one in our coordinate vector or why out matrix is now 3x3. We now have transformed our vector into <i>homogeneous coordinates</i>. The reason we do this is to upscale from 2D space to 3D which gives literal space in our matrices to embed translation with other linear transformations in a singular matrix. This capability is exactly what we wanted in the previous example where we wanted to apply sequential matrix transformations.</p>
 <p>Let&rsquo;s go through a simple example reinforcing this idea. Given the coordinates \((1, 2), (3, 4)\), and \((5, 6)\), we can construct the matrix where each column represents a set of homogeneous coordinates:</p>
 $$
 \begin{pmatrix}
@@ -293,9 +232,9 @@ $$
 $$<p>
 Our new 2D coordinates are \((0, 3), (-2, 5)\), and \((-4, 7)\) embedded in 3D space.</p>
 <p></p>
-<p align="center"><b>Figure 1</b></p>
 <p align="center">
   <img src="/3dplotcoords.png" alt="3D Coordinate Plot" width="300"/>
+<p align="center"><b>Figure 1</b>. Homogeneous coordinates pre and post linear transformation</p>
 </p>
 <p>The red points represent our original coordinates, the blue our rotated coordinates, and finally the green are the rotated and translated coordinates (Figure 1).</p>
 <p></p>
@@ -307,7 +246,7 @@ a & b & t_x \\\
 c & d & t_y \\\
 0 & 0 & 1
 \end{pmatrix}
-$$<p>The upper left \(2\) x \(2\) submatrix defines the linear part of our transformation, while the right-most column encodes translation. To calculate the determinant of our linear transformation is \(ad-bc\).</p>
+$$<p>The upper left 2x2 submatrix defines the linear part of our transformation, while the right-most column encodes translation. To calculate the determinant of our linear transformation we solve the equation \(det(A) = ad-bc\) where \(A\) is our upper left submatrix.</p>
 <p>If this determinant is equal to one, the transformation preserves area which indicates a rigid transformation (either rotation or reflection). If our determinant is greater than one, our area is scaled, thus implying a scale or shear operation. Finally, if the determinant is zero, the space is squished into a smaller dimension which tells us the transformation was invertible (meaning there is no transformation that can &ldquo;rewind time&rdquo; back to our original spatial state). Such a transformation is not compatible with registration, which usually requires us to preserve spacial structure.</p>
 <p>By examining the determinant of our transformation matrices, we can tell whether a transformation will be valid in the context of registration. It&rsquo;s a neat example of how the geometric interpretation of the determinant connects directly to our registration problem.</p>
 <p>Now that we have a basic understanding of transformation models and have learned important background knowledge, we can now move on to our first approach to register images: parameter optimization.
@@ -317,13 +256,13 @@ $$<p>The upper left \(2\) x \(2\) submatrix defines the linear part of our trans
 Traditional image registration algorithms can be posed as an optimization problem, where given a cost function, we try and optimize the parameters and minimize cost. Formally, let \( I_F \) and \(I_M\) represent our fixed and moving images respectively. In two-dimensional space, our image coordinates are represented by 
 \(\mathbf{x}=(x,y)\) and \(\mathbf{x'}=(x',y')\). We want to approximate a transformation \(T\) : <b>&#8477</b><sup><i>d</i></sup> &#8594; <b>&#8477</b><sup><i>d</i></sup> such that \(I_M(T(\mathbf{x}))\) &#8776 \(I_F(\mathbf{x})\), for all \(\mathbf{x}\) &#8712; &#937; where &#937; is our spatial domain (space in which our coordinates live).
 <p></p>
- While thinking about how image coordinates are represented, I think it is interesting to touch on how the spatial domain of coordinates behaves more like an <i>affine space</i> than a strict vector space. Since translations, like I mentioned earlier, break the origin preserving axiom of vector spaces, an affine space, which disregards the origin, is a more appropriate representation. A neat quote that cleanly describes affine spaces by late mathematician Marcel Berger is: "<i>An affine space is nothing more than a vector space whose origin we try to forget about, by adding translations to the linear maps.</i>" Affine spaces are a natural setting for most of the common transformations used in registration problems (shear, rotation, scaling, translation, etc.).
+ While thinking about how image coordinates are represented, I think it is interesting to touch on how the spatial domain of coordinates behaves more like an <i>affine space</i> than a strict vector space. Since translations break the origin preserving axiom of vector spaces, an affine space, which disregards the origin, is a more appropriate representation. A neat quote that cleanly describes affine spaces by late mathematician Marcel Berger is: "<i>An affine space is nothing more than a vector space whose origin we try to forget about, by adding translations to the linear maps.</i>" Affine spaces are a natural setting for most of the common transformations used in registration problems (shear, rotation, scaling, translation, etc.).
 <p></p>
 We formulate our optimization problem with the following equation:
 $$
 T = \arg\min_T \mathcal{L}(I_F, I_M \circ T)
 $$
-Our loss function \(\mathcal{L}\) tells us how well aligned our images are to eachother.
+Our loss function \(\mathcal{L}\) tells us how well aligned our images are to each other.
 </span>
 <h4 id="common-loss-functions">common loss functions<a hidden class="anchor" aria-hidden="true" href="#common-loss-functions">#</a></h4>
 <span style="font-size:14px">
@@ -333,14 +272,60 @@ SSE = \mathcal{\sum_{i=1}^{n}}(y_i-f(x))^2
 $$<p>where $y_i$ is the ground-truth and $f(x)$ is the predicted value. While this is the general formulation for the SSE, we will need to tune it slightly to suit our image registration task.</p>
 $$
 \mathcal{L}_{SSE}=\mathcal{\sum_{(x,y)\in\Omega}}[I_F(x, y)-I_M(T_\theta(x, y))]^2
-$$<p>Let \(I_F(x,y)\) be the fixed image and \(I_M(T_\theta(x, y))\) be the moving image with our transformation applied to its spatial domain. Comparing this to the traditional SSE formula, our fixed image is the &ldquo;ground-truth&rdquo; or the goal state of our moving image. More concretely, we are subtracting the intensity difference at each pixel in both images, squaring that difference, and summing over all pixels.</p>
-<p>The main caveat of this function is that in order to perform well, the intensities between images must be the <i>exact</i> same. For example, we should use two images of the same scene except one has been transformed in some way for this loss function to converge in a timely manner. There certainly are more effective loss functions for our task, but I appreciate the clean gradient calculation our update rule so I&rsquo;ll stick with it for this post.</p>
+$$<p>Let \(I_F(x,y)\) be the fixed image and \(I_M(T_\theta(x, y))\) be the moving image with our transformation applied to its spatial domain. Comparing this to the traditional SSE formula, our fixed image is the &ldquo;ground-truth,&rdquo; or the goal state of our moving image. More concretely, we are subtracting the intensity difference at each pixel in both images, squaring that difference, and summing over all pixels.</p>
+<p>The main caveat of this function is that in order to perform well, the intensities between images must be the <i>exact</i> same. For example, we should use two images of the same scene except one has been transformed in some way for this loss function to converge or where further iterations won&rsquo;t improve our parameters. There certainly are more effective loss functions for our task, but I appreciate the clean gradient calculation of our loss so I&rsquo;ll stick with it for this post.</p>
 </span>
 <h4 id="optimization-techniques">optimization techniques<a hidden class="anchor" aria-hidden="true" href="#optimization-techniques">#</a></h4>
 <p>I&rsquo;ll now discuss common optimization techniques that can be applied to our <i>sum of squared errors</i> formula to find optimal parameters which register our images. Since our loss function is differentiable, we have a wide variety of optimization techniques to solve our problem. The most famous technique I&rsquo;ll discuss is <i>gradient descent</i>. Gradient descent is a relatively straightforward first order iterative algorithm that is commonly associated with deep neural networks. Our update rule is:</p>
 $$
 \mathbf{a}_{n+1}=\mathbf{a}_{n}-\eta\nabla\mathcal{L}(\mathbf{a}_{n})
-$$<p>\(\mathbf{a}_{n+1}\) is our updated parameter vector after a step, \(\mathbf{a}_{n}\) is our current iteration parameters, \(\eta\) is our learning rate or step size, and finally \(\nabla\mathcal{L}(a_n)\) is the gradient of our loss function. Since we are solving a minimization problem, we subtract the gradient which means we move in the direction of steepest descent. Let&rsquo;s say we are performing rigid registration where we are limited to translation and rotation. Our parameter vector \(\mathbf{a}\) would be \((t_x, t_y, \theta)\).</p>
+$$<p>\(\mathbf{a}_{n+1}\) is our updated parameter vector after a step, \(\mathbf{a}_{n}\) is our current iteration parameters, \(\eta\) is our learning rate or step size, and finally \(\nabla\mathcal{L}(a_n)\) is the gradient vector of our loss function. Since we are solving a minimization problem, we subtract the gradient which means we move in the direction of steepest descent. Let&rsquo;s say we are performing rigid registration where we are limited to translation and rotation. Our parameter vector \(\mathbf{a}\) would be \((t_x, t_y, \theta)\).</p>
+<h4 id="gradient-calculation">gradient calculation<a hidden class="anchor" aria-hidden="true" href="#gradient-calculation">#</a></h4>
+<p>I&rsquo;d like to now go through the gradient calculation of the sum of squared errors (\(\nabla\mathcal{L}(\mathbf{a}_{n})\)) so we can apply it to our update rule.</p>
+<p>Our goal is to calculate the partial derivatives of our loss function with respect to our parameters \((t_x, t_y\) and \(\theta\)). The first step is to differentiate
+our loss function:</p>
+$$
+\frac{\partial SSE}{\partial \mathbf{a}_n}=-2\sum_{x,y}(I_F(x,y)-I_M(x',y'))(\frac{\partial{I_M(x',y')}}{\partial{\mathbf{a}_n}})
+$$<p>One with a keen eye might ask where the partial of the fixed image with respect to our parameters went. Since the ground truth image doesn&rsquo;t depend on any parameter, we treat it as a constant and during our differentiation, we can omit it.</p>
+<p>If we calculate the matrix vector product of the homogeneous coordinate vector and the translation-rotation matrix, the resulting vector contains the newly transformed coordinates \(x'\) and \(y'\).</p>
+$$
+\begin{pmatrix}
+\cos\theta & -\sin\theta & t_x \\\
+\sin\theta & \cos\theta & t_y \\\
+0 & 0 & 1
+\end{pmatrix}
+\begin{pmatrix}
+x \\\ y \\\ 1
+\end{pmatrix}=
+\begin{pmatrix}
+x\cos\theta-y\sin\theta+t_x \\\
+x\sin\theta+y\cos\theta+t_y \\\
+1
+\end{pmatrix}
+$$<p>We will now move on to finding the partials \(\frac{\partial I_M(x', y')}{t_x}\), \(\frac{\partial I_M(x', y')}{t_y}\), and \(\frac{\partial I_M(x', y')}{\theta}\).</p>
+$$
+\frac{\partial I_M(x', y')}{\partial t_x}=\frac{\partial I_M}{\partial x'}\frac{\partial x'}{\partial t_x}+\frac{\partial I_M}{\partial y'}\frac{\partial y'}{\partial t_x}
+$$$$
+\frac{\partial I_M(x', y')}{\partial t_y}=\frac{\partial I_M}{\partial x'}\frac{\partial x'}{\partial t_y}+\frac{\partial I_M}{\partial y'}\frac{\partial y'}{\partial t_y}
+$$$$
+\frac{\partial I_M(x', y')}{\partial \theta}=\frac{\partial I_M}{\partial x'}\frac{\partial x'}{\partial \theta}+\frac{\partial I_M}{\partial y'}\frac{\partial y'}{\partial \theta}
+$$<p>Most of the partials are easy to compute.</p>
+$$
+\frac{\partial I_M}{\partial x'}= \nabla_x(I_M), \frac{\partial I_M}{\partial y'} = \nabla_y(I_M)
+$$$$
+\frac{\partial x'}{\partial t_x} = 1, \frac{\partial x'}{\partial t_y} = 0, \frac{\partial y'}{\partial t_x} = 0, \frac{\partial y'}{\partial t_y} = 1
+$$$$
+\frac{\partial x'}{\partial \theta}=-x\sin\theta-y\cos\theta, \frac{\partial y'}{\partial \theta} = x\cos\theta-y\sin\theta
+$$<p>Finally, our gradient vector will be composed of these three partials:</p>
+$$
+\begin{pmatrix}
+-2\sum_\limits{x,y}(I_F(x,y)-I_M(x',y'))(\frac{\partial I_M}{\partial x'}) \\\
+-2\sum_\limits{x,y}(I_F(x,y)-I_M(x',y'))(\frac{\partial I_M}{\partial y'}) \\\
+-2\sum_\limits{x,y}(I_F(x,y)-I_M(x',y'))(\frac{\partial I_M}{\partial x'}(-x\sin\theta-y\cos\theta)+\frac{\partial I_M}{\partial y'}(x\cos\theta-y\sin\theta))
+\end{pmatrix}
+$$<p>We can now use this calculated gradient vector in our gradient descent update rule to find optimal transformation parameters!</p>
+<h4 id="conclusion">conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h4>
+<h4 id="technical-vocabulary">technical vocabulary<a hidden class="anchor" aria-hidden="true" href="#technical-vocabulary">#</a></h4>
 <p>sources (format later): <a href="https://www.ncbi.nlm.nih.gov/books/NBK597490/">https://www.ncbi.nlm.nih.gov/books/NBK597490/</a>
 <a href="https://staff.fnwi.uva.nl/r.vandenboomgaard/IPCV20162017/LectureNotes/IP/Images/ImageDefinition.html">https://staff.fnwi.uva.nl/r.vandenboomgaard/IPCV20162017/LectureNotes/IP/Images/ImageDefinition.html</a>
 <a href="https://people.computing.clemson.edu/~dhouse/courses/401/notes/affines-matrices.pdf">https://people.computing.clemson.edu/~dhouse/courses/401/notes/affines-matrices.pdf</a></p>
@@ -356,7 +341,7 @@ $$<p>\(\mathbf{a}_{n+1}\) is our updated parameter vector after a step, \(\mathb
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="/">ethan reidel</a></span> · 
+        <span>&copy; 2025 <a href="//localhost:1313/">ethan reidel</a></span> · 
 
     <span>
         Powered by
