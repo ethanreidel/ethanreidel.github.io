@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>ethan reidel</title>
-    <link>//localhost:1313/</link>
+    <link>https://ethanreidel.github.io/</link>
     <description>Recent content on ethan reidel</description>
     <generator>Hugo -- 0.145.0</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 01 May 2025 10:00:00 -0700</lastBuildDate>
-    <atom:link href="//localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://ethanreidel.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Image registration 1</title>
-      <link>//localhost:1313/posts/deep_image_registration/</link>
+      <link>https://ethanreidel.github.io/posts/deep_image_registration/</link>
       <pubDate>Fri, 02 May 2025 10:00:00 -0700</pubDate>
-      <guid>//localhost:1313/posts/deep_image_registration/</guid>
+      <guid>https://ethanreidel.github.io/posts/deep_image_registration/</guid>
       <description>initial blog post entry detailing image registration techniques and their application to astronomical image stacking. topics: linear algebra, calculus, image processing, optimization</description>
     </item>
   </channel>

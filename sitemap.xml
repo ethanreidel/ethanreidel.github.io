@@ -2,17 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>//localhost:1313/</loc>
-    <lastmod>2025-04-17T14:56:34-07:00</lastmod>
+    <loc>https://ethanreidel.github.io/</loc>
+    <lastmod>2025-05-01T10:00:00-07:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/</loc>
-    <lastmod>2025-04-17T14:56:34-07:00</lastmod>
+    <loc>https://ethanreidel.github.io/posts/deep_image_registration/</loc>
+    <lastmod>2025-05-01T10:00:00-07:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/deep_image_registration/</loc>
-    <lastmod>2025-03-26T14:40:53-07:00</lastmod>
+    <loc>https://ethanreidel.github.io/posts/</loc>
+    <lastmod>2025-05-01T10:00:00-07:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/categories/</loc>
+    <loc>https://ethanreidel.github.io/categories/</loc>
   </url><url>
-    <loc>//localhost:1313/tags/</loc>
+    <loc>https://ethanreidel.github.io/tags/</loc>
   </url>
 </urlset>
