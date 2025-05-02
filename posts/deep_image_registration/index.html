@@ -253,16 +253,20 @@ $$<p>The upper left 2x2 submatrix defines the linear part of our transformation,
 </span></p>
 <h4 id="posing-image-registration-as-an-optimization-problem">posing image registration as an optimization problem<a hidden class="anchor" aria-hidden="true" href="#posing-image-registration-as-an-optimization-problem">#</a></h4>
 <span style="font-size:14px">
-Traditional image registration algorithms can be posed as an optimization problem, where given a cost function, we try and optimize the parameters and minimize cost. Formally, let \( I_F \) and \(I_M\) represent our fixed and moving images respectively. In two-dimensional space, our image coordinates are represented by 
+Traditional image registration algorithms can be posed as an optimization problem, where given a cost function, we try and optimize the parameters and minimize cost.
+When solving any optimization problem, it is beneficial to describe the problem in plain english:
+<p></p>
+You are working on an image registration task and are given fixed and moving images to register and a set of three transformations: rotation, translation in the x-direction, and translation in the y-direction. You cannot change these transformations, but you can alter the amount the moving image is rotated and translated. Knowing this, what is the best combination of rotation and translation on the moving image such that the difference between the two images is minimized?
+<p></p>
+Formally, let \( I_F \) and \(I_M\) represent our fixed and moving images respectively. In two-dimensional space, our image coordinates are represented by 
 \(\mathbf{x}=(x,y)\) and \(\mathbf{x'}=(x',y')\). We want to approximate a transformation \(T\) : <b>&#8477</b><sup><i>d</i></sup> &#8594; <b>&#8477</b><sup><i>d</i></sup> such that \(I_M(T(\mathbf{x}))\) &#8776 \(I_F(\mathbf{x})\), for all \(\mathbf{x}\) &#8712; &#937; where &#937; is our spatial domain (space in which our coordinates live).
 <p></p>
  While thinking about how image coordinates are represented, I think it is interesting to touch on how the spatial domain of coordinates behaves more like an <i>affine space</i> than a strict vector space. Since translations break the origin preserving axiom of vector spaces, an affine space, which disregards the origin, is a more appropriate representation. A neat quote that cleanly describes affine spaces by late mathematician Marcel Berger is: "<i>An affine space is nothing more than a vector space whose origin we try to forget about, by adding translations to the linear maps.</i>" Affine spaces are a natural setting for most of the common transformations used in registration problems (shear, rotation, scaling, translation, etc.).
 <p></p>
-We formulate our optimization problem with the following equation:
+<p>Now we can formulate our optimization problem with the following minimization equation:</p>
 $$
-T = \arg\min_T \mathcal{L}(I_F, I_M \circ T)
-$$
-Our loss function \(\mathcal{L}\) tells us how well aligned our images are to each other.
+T = \underset{T}\arg\min \mathcal{L}(I_F, I_M \circ T)
+$$<p>Our loss function \(\mathcal{L}\) tells us how well aligned our images are to each other and we must minimize that loss value.</p>
 </span>
 <h4 id="common-loss-functions">common loss functions<a hidden class="anchor" aria-hidden="true" href="#common-loss-functions">#</a></h4>
 <span style="font-size:14px">
@@ -273,21 +277,20 @@ $$<p>where $y_i$ is the ground-truth and $f(x)$ is the predicted value. While th
 $$
 \mathcal{L}_{SSE}=\mathcal{\sum_{(x,y)\in\Omega}}[I_F(x, y)-I_M(T_\theta(x, y))]^2
 $$<p>Let \(I_F(x,y)\) be the fixed image and \(I_M(T_\theta(x, y))\) be the moving image with our transformation applied to its spatial domain. Comparing this to the traditional SSE formula, our fixed image is the &ldquo;ground-truth,&rdquo; or the goal state of our moving image. More concretely, we are subtracting the intensity difference at each pixel in both images, squaring that difference, and summing over all pixels.</p>
-<p>The main caveat of this function is that in order to perform well, the intensities between images must be the <i>exact</i> same. For example, we should use two images of the same scene except one has been transformed in some way for this loss function to converge or where further iterations won&rsquo;t improve our parameters. There certainly are more effective loss functions for our task, but I appreciate the clean gradient calculation of our loss so I&rsquo;ll stick with it for this post.</p>
+<p>The main caveat of this error function is that in order to perform well, the intensities between images must be the <i>exact</i> same. For example, we should use two images of the same scene except one has been transformed in some way for this loss function to converge. There certainly are more effective loss functions for our task, but I appreciate the clean gradient calculation of our loss so I&rsquo;ll stick with it for this post.</p>
 </span>
 <h4 id="optimization-techniques">optimization techniques<a hidden class="anchor" aria-hidden="true" href="#optimization-techniques">#</a></h4>
-<p>I&rsquo;ll now discuss common optimization techniques that can be applied to our <i>sum of squared errors</i> formula to find optimal parameters which register our images. Since our loss function is differentiable, we have a wide variety of optimization techniques to solve our problem. The most famous technique I&rsquo;ll discuss is <i>gradient descent</i>. Gradient descent is a relatively straightforward first order iterative algorithm that is commonly associated with deep neural networks. Our update rule is:</p>
+<p>I&rsquo;ll now discuss common optimization techniques that can be applied to our <i>sum of squared errors</i> formula to find optimal parameters which register our images. Since our loss function is differentiable, we have a wide variety of optimization techniques available to solve our problem. The most famous technique I&rsquo;ll discuss is <i>gradient descent</i>. Gradient descent is a relatively straightforward first order iterative algorithm that is commonly associated with deep neural networks. Our update rule is:</p>
 $$
 \mathbf{a}_{n+1}=\mathbf{a}_{n}-\eta\nabla\mathcal{L}(\mathbf{a}_{n})
-$$<p>\(\mathbf{a}_{n+1}\) is our updated parameter vector after a step, \(\mathbf{a}_{n}\) is our current iteration parameters, \(\eta\) is our learning rate or step size, and finally \(\nabla\mathcal{L}(a_n)\) is the gradient vector of our loss function. Since we are solving a minimization problem, we subtract the gradient which means we move in the direction of steepest descent. Let&rsquo;s say we are performing rigid registration where we are limited to translation and rotation. Our parameter vector \(\mathbf{a}\) would be \((t_x, t_y, \theta)\).</p>
+$$<p>\(\mathbf{a}_{n+1}\) is our updated parameter vector after a step, \(\mathbf{a}_{n}\) is our current iteration parameters, \(\eta\) is our learning rate or step size, and finally \(\nabla\mathcal{L}(a_n)\) is the gradient vector of our loss function. Since we are solving a minimization problem, we subtract the gradient which means we move in the direction of steepest descent. If we are performing rigid registration where we are limited to translation and rotation. Our parameter vector \(\mathbf{a}\) would be \((t_x, t_y, \theta)\).</p>
 <h4 id="gradient-calculation">gradient calculation<a hidden class="anchor" aria-hidden="true" href="#gradient-calculation">#</a></h4>
 <p>I&rsquo;d like to now go through the gradient calculation of the sum of squared errors (\(\nabla\mathcal{L}(\mathbf{a}_{n})\)) so we can apply it to our update rule.</p>
 <p>Our goal is to calculate the partial derivatives of our loss function with respect to our parameters \((t_x, t_y\) and \(\theta\)). The first step is to differentiate
 our loss function:</p>
 $$
 \frac{\partial SSE}{\partial \mathbf{a}_n}=-2\sum_{x,y}(I_F(x,y)-I_M(x',y'))(\frac{\partial{I_M(x',y')}}{\partial{\mathbf{a}_n}})
-$$<p>One with a keen eye might ask where the partial of the fixed image with respect to our parameters went. Since the ground truth image doesn&rsquo;t depend on any parameter, we treat it as a constant and during our differentiation, we can omit it.</p>
-<p>If we calculate the matrix vector product of the homogeneous coordinate vector and the translation-rotation matrix, the resulting vector contains the newly transformed coordinates \(x'\) and \(y'\).</p>
+$$<p>If we calculate the matrix vector product of the homogeneous coordinate vector and the translation-rotation matrix, the resulting vector contains the newly transformed coordinates \(x'\) and \(y'\).</p>
 $$
 \begin{pmatrix}
 \cos\theta & -\sin\theta & t_x \\\
@@ -302,7 +305,7 @@ x\cos\theta-y\sin\theta+t_x \\\
 x\sin\theta+y\cos\theta+t_y \\\
 1
 \end{pmatrix}
-$$<p>We will now move on to finding the partials \(\frac{\partial I_M(x', y')}{t_x}\), \(\frac{\partial I_M(x', y')}{t_y}\), and \(\frac{\partial I_M(x', y')}{\theta}\).</p>
+$$<p>We will now move on to finding the partials \(\frac{\partial I_M(x', y')}{\partial t_x}\), \(\frac{\partial I_M(x', y')}{\partial t_y}\), and \(\frac{\partial I_M(x', y')}{\partial \theta}\) using the chain rule.</p>
 $$
 \frac{\partial I_M(x', y')}{\partial t_x}=\frac{\partial I_M}{\partial x'}\frac{\partial x'}{\partial t_x}+\frac{\partial I_M}{\partial y'}\frac{\partial y'}{\partial t_x}
 $$$$
@@ -316,14 +319,34 @@ $$$$
 \frac{\partial x'}{\partial t_x} = 1, \frac{\partial x'}{\partial t_y} = 0, \frac{\partial y'}{\partial t_x} = 0, \frac{\partial y'}{\partial t_y} = 1
 $$$$
 \frac{\partial x'}{\partial \theta}=-x\sin\theta-y\cos\theta, \frac{\partial y'}{\partial \theta} = x\cos\theta-y\sin\theta
-$$<p>Finally, our gradient vector will be composed of these three partials:</p>
+$$<p>The partial of \(I_M\) with respect to \(x'\) and \(y'\) are image gradients in the horizontal and vertical directions. Image gradients are matrices the same size as our input image where each coordinate represents the intensity change in the direction of the partial derivative. More specifically, if we are taking the gradient w.r.t \(x'\) for example, each coordinate in the new \(x'\) gradient matrix represents the change of intensity in the horizontal direction. Zero gradient means there was no change in intensity between pixels and larger non-zero gradients represent larger shifts in pixel intensity. In practice, we can use a sobel kernel and convolve that filter with the image to approximate the gradient in each direction.</p>
+<p>The sobel kernel is usually a \(3x3\) matrix convolved (\(\circledast\) symbol) with our image matrix:</p>
+$$
+\begin{pmatrix}
+-1 && 0 && +1 \\\
+-2 && 0 && +2 \\\
+-1 && 0 && +1
+\end{pmatrix} or
+\begin{pmatrix}
+-1 && -2 && -1 \\\
+0 && 0 && 0 \\\
++1 && +2 && +1
+\end{pmatrix}
+$$<p>Here&rsquo;s an example of what an sobel-convolved image looks like.</p>
+<p></p>
+<p align="center">
+  <img src="/Valve_sobel.PNG" alt="3D Coordinate Plot" width="300"/>
+<p align="center"><b>Figure 2</b>. Sobel operator applied to an image</p>
+</p>
+<p>Finally, our gradient vector will be composed of these three partials:</p>
 $$
 \begin{pmatrix}
 -2\sum_\limits{x,y}(I_F(x,y)-I_M(x',y'))(\frac{\partial I_M}{\partial x'}) \\\
 -2\sum_\limits{x,y}(I_F(x,y)-I_M(x',y'))(\frac{\partial I_M}{\partial y'}) \\\
 -2\sum_\limits{x,y}(I_F(x,y)-I_M(x',y'))(\frac{\partial I_M}{\partial x'}(-x\sin\theta-y\cos\theta)+\frac{\partial I_M}{\partial y'}(x\cos\theta-y\sin\theta))
 \end{pmatrix}
-$$<p>We can now use this calculated gradient vector in our gradient descent update rule to find optimal transformation parameters!</p>
+$$<p>Before moving on I&rsquo;d like to clarify something that confused me related to the image gradients in our final gradient vector. The partial \(\frac{\partial I_M}{\partial x'}\) is not our whole gradient matrix just the gradient at coordinate (x,y). So instead of multiplying the residual by the whole image, we just multiply the residual/error by the gradient value at the cooresponding coordinate resulting in a scalar.</p>
+<p>We can now use this calculated gradient vector in our gradient descent update rule to find optimal transformation parameters!</p>
 <h4 id="conclusion">conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h4>
 <h4 id="technical-vocabulary">technical vocabulary<a hidden class="anchor" aria-hidden="true" href="#technical-vocabulary">#</a></h4>
 <p>sources (format later): <a href="https://www.ncbi.nlm.nih.gov/books/NBK597490/">https://www.ncbi.nlm.nih.gov/books/NBK597490/</a>
